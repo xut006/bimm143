@@ -83,5 +83,13 @@ box plot
 boxplot(exp~geno, geno)
 ```
 
+```{r}
+#' We could also use the **ggplot2** package to make our plots
+
+library(ggplot2)
+
+## Boxplot
+ggplot(geno, aes(geno, exp)) + geom_boxplot()
+```
 
 
