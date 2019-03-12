@@ -134,3 +134,14 @@ boxplot(exp~geno, geno)
 ```
 
 ![](class14_files/figure-markdown_github/unnamed-chunk-12-1.png)
+
+``` r
+#' We could also use the **ggplot2** package to make our plots
+
+library(ggplot2)
+
+## Boxplot
+ggplot(geno, aes(geno, exp)) + geom_boxplot()
+```
+
+![](class14_files/figure-markdown_github/unnamed-chunk-13-1.png)

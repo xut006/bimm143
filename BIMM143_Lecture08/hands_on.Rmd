@@ -2,7 +2,7 @@
 title: "Hands_on"
 author: "Xuqian Tan"
 date: "2/5/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
