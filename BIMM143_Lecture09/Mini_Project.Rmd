@@ -2,7 +2,7 @@
 title: "Mini_Project"
 author: "Xuqian Tan"
 date: "2/7/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -185,7 +185,7 @@ npc
 ```
 
 ```{r}
-plot(wisc.pr$x[,1:2], col=grps)
+plot(wisc.pr$x[,1:2], col=grps2)
 points(npc[,1], npc[,2], col="blue", pch=16)
 ```
 
