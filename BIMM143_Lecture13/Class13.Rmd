@@ -1,0 +1,75 @@
+---
+title: "Class13"
+author: "Xuqian Tan"
+date: "2/19/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Prepare HIV-protase molecule for docking
+
+first get a PDB structure from the online database then clean it up for docking
+```{r}
+library(bio3d)
+file.name <- get.pdb("1hsg")
+```
+
+Read file into R and clean it up (remove non-protein bits) and also we will save the ligand into a seperate file.
+```{r}
+hiv <- read.pdb(file.name)
+hiv
+#remove the non-protein part so that Non-protein/nucleic count is 0
+prot <- trim.pdb(hiv, "protein")
+prot
+lig <- trim.pdb(hiv, "ligand")
+lig
+```
+
+```{r}
+write.pdb(prot, file="1hsg_protein.pdb")
+```
+
+```{r}
+write.pdb(lig, file="1hsg_ligand.pdb")
+```
+
+
+Q1: What is the name of the two non protein resid values in this structure? What does resid correspond to and how would you get a listing of all reside values in this structure?
+```{r}
+#A1: HOH (127), MK1 (1)
+```
+
+
+```{r}
+library(bio3d)
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+```
+
+```{r}
+res <- read.pdb("all.pdbqt", multi=TRUE)
+ori <- read.pdb("ligand.pdbqt")
+rmsd(ori, res)
+```
+
+
+## Normal Mode Analysis
+```{r}
+pdb <- read.pdb("1HEL")
+m <- nma(pdb)
+plot(m)
+```
+
+
+```{r}
+mktrj(m, mode = 7, file = "nma_7.pdb")
+```
+
+
+
+
+
+
