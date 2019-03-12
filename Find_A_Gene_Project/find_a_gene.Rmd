@@ -1,0 +1,37 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+MSA <- read.fasta("MSA_find_a_gene.fst")
+MSA
+```
+
+```{r}
+ide.mat <- seqidentity(MSA)
+heatmap(ide.mat, margins = c(11, 11))
+```
+
+```{r}
+con <- consensus(MSA)
+con
+```
+
+```{r}
+pdb <- blast.pdb(con$seq)
+pdb
+```
+
+```{r}
+anotation <- pdb.annotate(pdb$hit.tbl$pdb.id)
+```
+

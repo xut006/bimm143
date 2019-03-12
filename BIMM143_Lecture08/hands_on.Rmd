@@ -1,0 +1,62 @@
+---
+title: "Hands_on"
+author: "Xuqian Tan"
+date: "2/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Hands on with Principal Component Analysis (PCA)
+
+```{r}
+x <- read.csv("UK_foods.csv")
+dim(x)
+head(x)
+```
+
+```{r}
+# changing row names
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+dim(x)
+```
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+```{r}
+pca <- prcomp( t(x) )
+summary(pca)
+```
+
+
+```{r}
+# Plot PC1 vs PC2
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x), col=c("orange","red","blue", "darkgreen"))
+```
+
+
+this will help us determine how the original variables (dimentions) contribute to our new PCs
+```{r}
+## Lets focus on PC1 as it accounts for > 90% of variance 
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,1], las=2 )
+```
+
+
+
+
+
+
+
+
+
+
+
+

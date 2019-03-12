@@ -1,0 +1,142 @@
+---
+title: "Class06"
+author: "Xuqian Tan"
+date: "1/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Section 1: Reading files again :-)
+
+Here we are going to try using the **read.table()** function and friends to read some example flat files 
+
+First lets try adding a simple plot
+```{r}
+plot(1:10)
+
+```
+
+Back to file reading...
+```{r}
+read.table("https://bioboot.github.io/bimm143_W19/class-material/test1.txt", header = TRUE, sep = ",")
+```
+
+For this common CSV, we could use **read.csv()**
+```{r}
+file1 <- "https://bioboot.github.io/bimm143_W19/class-material/test1.txt"
+read.csv(file1)
+```
+
+Read other files
+```{r}
+table2 <- read.table("https://bioboot.github.io/bimm143_W19/class-material/test2.txt", header = TRUE, sep = "$")
+table3 <- read.table("https://bioboot.github.io/bimm143_W19/class-material/test3.txt", header = FALSE)
+table2
+table3
+```
+
+## Section 2, R functions
+
+My first silly function
+```{r}
+add <- function(x, y=1) {
+  # Sum the input x and y
+  x + y
+}
+```
+
+Let's try using the function
+```{r}
+add(1)
+add(1,100)
+add(c(1,2,3),4)
+```
+
+```{r}
+rescale <- function(x) {
+  rng <-range(x)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+test on a small example where we know what the answer should be
+```{r}
+rescale(1:10)
+```
+```{r}
+rescale(c(1,2,NA,3,10))
+```
+
+```{r}
+rescale2 <- function(x) {
+  rng <-range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+rescale2(c(1,2,NA,3,10))
+```
+
+```{r}
+rescale3 <- function(x, na.rm=TRUE, plot=FALSE) {
+  rng <-range(x, na.rm=na.rm)
+  print("Hello")
+  answer <- (x - rng[1]) / (rng[2] - rng[1])
+  print("is it me you are looking for?")
+  if(plot) {
+    plot(answer, typ="b", lwd=4)
+  }
+  print("I can see it in ...")
+  return(answer)
+}
+```
+
+```{r}
+rescale3(c(1:6, NA, 10), plot = TRUE)
+```
+
+
+## Hands on section 1B
+```{r}
+# Can you improve this analysis code?
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+```{r}
+Analysis <- function(name) {
+  s <- read.pdb(name)
+  s.chainA <- trim.pdb(s1, chain="A", elety="CA")
+  s.b <- s1.chainA$atom$b
+  plotb3(s.b, sse=s.chainA, typ="l", ylab="Bfactor")
+}
+```
+
+test
+```{r}
+names <- c("4AKE", "1AKE", "1E4Y")
+for (i in names){
+  Analysis(i)
+}
+```
+
+
+
+
+

@@ -1,0 +1,193 @@
+---
+title: "Mini_Project"
+author: "Xuqian Tan"
+date: "2/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Preparing Data
+read data set
+```{r}
+fna.data <- "WisconsinCancer.csv"
+wisc.df <- read.csv(fna.data)
+```
+
+see the first 6 rows of data
+```{r}
+head(wisc.df)
+
+#How many samples (i.e patients) are there in this data set
+nrow(wisc.df)
+```
+
+Convert the features of the data: wisc.data
+```{r}
+wisc.data <- as.matrix(wisc.df[,3:32])
+head(wisc.data)
+```
+
+add row names to our new matrix of data
+```{r}
+# Set the row names of wisc.data
+row.names(wisc.data) <- wisc.df$id
+head(wisc.data)
+```
+
+Setup a separate new vector called diagnosis to be 1 if a diagnosis is malignant ("M") and 0 otherwise. Note that R coerces TRUE to 1 and FALSE to 0
+```{r}
+# Create diagnosis vector by completing the missing code
+diagnosis <- as.numeric(wisc.df$diagnosis == "M")
+```
+
+
+##Exploratory data analysis
+Q1. How many observations are in this dataset?
+```{r}
+nrow(wisc.data)
+```
+
+Q2. How many variables/features in the data are suffixed with _mean?
+```{r}
+inds <- grep("_mean", colnames(wisc.data))
+length(inds)
+```
+
+Q3. How many of the observations have a malignant diagnosis?
+```{r}
+sum(diagnosis)
+```
+
+
+##Performing PCA
+
+```{r}
+# Check column means and standard deviations
+colMeans(wisc.data)
+
+apply(wisc.data,2,sd)
+```
+
+```{r}
+# Perform PCA on wisc.data by completing the following code
+wisc.pr <- prcomp(wisc.data, scale. = TRUE)
+summary(wisc.pr)
+```
+
+Q4. From your results, what proportion of the original variance is captured by the first principal components (PC1)?
+```{r}
+Q4 = 44.27
+```
+
+Q5. How many principal components (PCs) are required to describe at least 70% of the original variance in the data?
+```{r}
+Q5 = 5
+```
+
+Q6. How many principal components (PCs) are required to describe at least 90% of the original variance in the data?
+```{r}
+Q6 = 10
+```
+
+```{r}
+biplot(wisc.pr)
+```
+
+Generate a more standard scatter plot of each observation along principal components 1 and 2 (i.e. a plot of PC1 vs PC2 available as the first two columns of wisc.pr$x) and color the points by the diagnosis 
+```{r}
+plot(wisc.pr$x[,1] , wisc.pr$x[,2], col = diagnosis+1, xlab = "PC1", ylab = "PC2")
+```
+
+Variance captured by each PC
+This info is in the $sdev component of our PCA result
+```{r}
+varance <- wisc.pr$sdev^2
+pve <- round(varance/sum(varance)*100,1)
+```
+
+```{r}
+plot(pve, type = "o")
+```
+
+Alternative scree plot of the same data, note data driven y-axis
+```{r}
+barplot(pve, ylab = "Precent of Variance Explained", names.arg=paste0("PC",1:length(pve)), las=2, axes = FALSE)
+axis(2, at=pve, labels=round(pve,2))
+```
+
+
+##Hierarchical clustering
+
+```{r}
+# Scale the wisc.data data: data.scaled
+data.scaled <- scale(wisc.data)
+#Calculate the (Euclidean) distances between all pairs of observations
+data.dist <- dist(data.scaled)
+#Create a hierarchical clustering model using complete linkage. Manually specify the method argument to hclust() 
+wisc.hclust <- hclust(data.dist, method = "complete")
+```
+
+```{r}
+plot(wisc.hclust)
+abline(h = 19, col="red", lty=2)
+```
+
+Use cutree() to cut the tree so that it has 4 clusters
+```{r}
+wisc.hclust.clusters <- cutree(wisc.hclust, k = 4)
+#Use the table() function to compare the cluster membership to the actual diagnoses
+table(wisc.hclust.clusters, diagnosis)
+```
+
+
+##Clustering on PCA space
+For clustering we need:
+1. Distance matrix
+2. Clustering function
+3. Cutree
+
+This was the PCA result of PC1 and PC2
+```{r}
+plot(wisc.pr$x[,1] , wisc.pr$x[,2], col = diagnosis+1, xlab = "PC1", ylab = "PC2")
+```
+
+```{r}
+pc.dist <- dist(wisc.pr$x[,1:2])
+pc.hclust <- hclust(pc.dist, method = "ward.D2")
+plot(pc.hclust)
+```
+
+
+```{r}
+grps2 <- cutree(pc.hclust, k=2)
+table(grps2)
+```
+
+```{r}
+table(grps2, diagnosis)
+```
+
+```{r}
+plot(wisc.pr$x[,1:2], col=grps2)
+plot(wisc.pr$x[,1:2], col=diagnosis+1)
+```
+
+##Prediction
+
+```{r}
+url <- "https://tinyurl.com/new-samples-CSV"
+new <- read.csv(url)
+npc <- predict(wisc.pr, newdata=new)
+npc
+```
+
+```{r}
+plot(wisc.pr$x[,1:2], col=grps)
+points(npc[,1], npc[,2], col="blue", pch=16)
+```
+
+
+
